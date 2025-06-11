@@ -2,9 +2,12 @@ const express = require('express')
 const config = require('./src/config/config')
 const githubRoutes = require('./src/routes/githubRoutes')
 const groqRoutes = require('./src/routes/groqRoutes')
+const path = require('path');
+
 const cors = require('cors')
 
 const app = express()
+app.use(express.static(path.join(__dirname, 'front/vue')));
 
 app.use(express.json())
 app.use(cors({
@@ -16,8 +19,9 @@ app.use('/api/github', githubRoutes)
 app.use('/api/groq', groqRoutes)
 
 app.get('/', (req, res) => {
-  res.json({ message: 'API de vérification de code' })
-})
+  res.sendFile(path.join(__dirname, 'front/vue/index.html'));
+});
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack)

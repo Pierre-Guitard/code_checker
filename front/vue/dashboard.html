@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard GitHub</title>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link rel="stylesheet" href="public/dashboard.css">
+
+</head>
+<body>
+
+<div x-data="dashboard()" x-init="chargerDonnees()">
+  <h1> Données GitHub</h1>
+
+  <template x-if="erreur">
+    <div style="color:red" x-text="erreur"></div>
+  </template>
+
+<template x-if="repo">
+  <div class="card">
+    <h2 x-text="repo.name"></h2>
+    <p><strong>Propriétaire :</strong> <span x-text="repo.full_name.split('/')[0]"></span></p>
+    <p><strong>Description :</strong> <span x-text="repo.description"></span></p>
+    <p><strong>Langage :</strong> <span x-text="repo.language"></span></p>
+    <p><strong>Issues ouvertes :</strong> <span x-text="repo.open_issues"></span></p>
+    <p><strong>Branche par défaut :</strong> <span x-text="repo.default_branch"></span></p>
+    <p><strong>Total de fichiers (racine) :</strong> <span x-text="repo.totalFiles"></span></p>
+    <p><strong>Total de commits :</strong> <span x-text="repo.totalCommits"></span></p>
+
+    <div>
+      <h3>Contributeurs :</h3>
+      <ul>
+        <template x-for="contrib in repo.contributors" :key="contrib.login">
+          <li x-text="`${contrib.login} (${contrib.commits} commits)`"></li>
+        </template>
+      </ul>
+    </div>
+  </div>
+</template>
+
+
+<script>
+  function dashboard() {
+    return {
+      repo: null,
+      erreur: '',
+      async chargerDonnees() {
+        const params = new URLSearchParams(window.location.search);
+        const url = params.get('url');
+
+        if (!url) {
+          this.erreur = 'URL non fournie';
+          return;
+        }
+
+        try {
+const res = await fetch('/api/github/repositories', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ url })
+});
+          const data = await res.json();
+
+          if (res.ok) {
+            this.repo = data;
+          } else {
+            this.erreur = data.error || 'Erreur inconnue';
+          }
+        } catch (e) {
+          this.erreur = 'Erreur lors de la connexion au serveur';
+        }
+      }
+    };
+  }
+</script>
+
+</body>
+</html>

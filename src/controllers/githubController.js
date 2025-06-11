@@ -1,51 +1,73 @@
 const config = require('../config/config');
 const axios = require('axios');
 
-const githubController = {
-    
-    getRepositories: async (req, res) => {
-        try {
-            const { url } = req.body;
-      
-            // url verif
-            if (!url || !url.includes('github.com')) {
-              return res.status(400).json({ error: 'URL GitHub invalide.' });
-            }
-            console.log(url);  
-            // extraire owner et repo via regex
-            const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
-            if (!match) {
-              return res.status(400).json({ error: 'Impossible d’extraire les infos du repo.' });
-            }
-            console.log(match);
-      
-            const owner = match[1];
-            const repo = match[2];
-            console.log(owner, repo);
-            // appel api github
-            const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, {
-            
-            });
-            console.log(response.data);
-            // récupérer les info importante
-            const data = response.data;
-            res.json({
-              name: data.name,
-              full_name: data.full_name,
-              description: data.description,
-              stars: data.stargazers_count,
-              forks: data.forks_count,
-              language: data.language,
-              visibility: data.visibility
-            });
-      
-          } catch (error) {
-            console.error(error.message);
-            res.status(500).json({ error: 'Erreur lors de la récupération du dépôt.' });
-          }
-        },
+// truc pour avoir du delais
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-        //ajouter les autres fonctionnalite ici
+const githubController = {
+  getRepositories: async (req, res) => {
+    try {
+      const url = req.body.url || req.query.url;
+
+      if (!url || !url.includes('github.com')) {
+        return res.status(400).json({ error: 'URL GitHub invalide.' });
+      }
+
+      const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
+      if (!match) {
+        return res.status(400).json({ error: 'Impossible d’extraire les infos du repo.' });
+      }
+
+      const owner = match[1];
+      const repo = match[2];
+
+      const headers = {
+        Authorization: `Bearer ${config.github.token}`
+      };
+
+      // 1. Infos principales
+      const repoRes = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+      const data = repoRes.data;
+
+      // 2. Attente de 2 secondes pour laisser GitHub générer les stats
+      await wait(2000);
+
+      const contribRes = await axios.get(
+        `https://api.github.com/repos/${owner}/${repo}/stats/contributors`,
+        { headers }
+      );
+
+      let contributors = [];
+      let totalCommits = 0;
+
+      if (Array.isArray(contribRes.data)) {
+        contributors = contribRes.data.map(c => ({
+          login: c.author?.login || 'inconnu',
+          commits: c.total
+        }));
+
+        totalCommits = contributors.reduce((sum, c) => sum + c.commits, 0);
+      }
+
+      // 3. Nombre de fichiers à la racine
+      const contentsRes = await axios.get(`https://api.github.com/repos/${owner}/${repo}/contents`, { headers });
+      const totalFiles = Array.isArray(contentsRes.data) ? contentsRes.data.length : 0;
+
+      res.json({
+        name: data.name,
+        full_name: data.full_name,
+        description: data.description,
+        language: data.language,
+        contributors,
+        totalCommits,
+        totalFiles
+      });
+
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ error: 'Erreur lors de la récupération du dépôt.' });
+    }
+  }
 };
 
 module.exports = githubController;
