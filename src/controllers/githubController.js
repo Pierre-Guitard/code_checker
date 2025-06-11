@@ -48,4 +48,4 @@ const githubController = {
         //ajouter les autres fonctionnalite ici
 };
 
-module.exports = githubController; 
+module.exports = githubController;
