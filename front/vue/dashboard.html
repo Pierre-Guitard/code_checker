@@ -3,76 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <title>Dashboard GitHub</title>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <link rel="stylesheet" href="public/dashboard.css">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="container" x-data="dashboard()" x-init="chargerDonnees()">
+    <h1 class="text-center mb-4">Dashboard GitHub</h1>
 
-<div x-data="dashboard()" x-init="chargerDonnees()">
-  <h1> Données GitHub</h1>
+    <template x-if="erreur">
+      <div class="error-message" x-text="erreur"></div>
+    </template>
 
-  <template x-if="erreur">
-    <div style="color:red" x-text="erreur"></div>
-  </template>
+    <template x-if="!repo && !erreur">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+      </div>
+    </template>
 
-<template x-if="repo">
-  <div class="card">
-    <h2 x-text="repo.name"></h2>
-    <p><strong>Propriétaire :</strong> <span x-text="repo.full_name.split('/')[0]"></span></p>
-    <p><strong>Description :</strong> <span x-text="repo.description"></span></p>
-    <p><strong>Langage :</strong> <span x-text="repo.language"></span></p>
-    <p><strong>Issues ouvertes :</strong> <span x-text="repo.open_issues"></span></p>
-    <p><strong>Branche par défaut :</strong> <span x-text="repo.default_branch"></span></p>
-    <p><strong>Total de fichiers (racine) :</strong> <span x-text="repo.totalFiles"></span></p>
-    <p><strong>Total de commits :</strong> <span x-text="repo.totalCommits"></span></p>
+    <template x-if="repo">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" x-text="repo.name"></h2>
+        </div>
 
-    <div>
-      <h3>Contributeurs :</h3>
-      <ul>
-        <template x-for="contrib in repo.contributors" :key="contrib.login">
-          <li x-text="`${contrib.login} (${contrib.commits} commits)`"></li>
-        </template>
-      </ul>
-    </div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Propriétaire</div>
+            <div class="stat-value" x-text="repo.full_name.split('/')[0]"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Langage</div>
+            <div class="stat-value" x-text="repo.language"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Issues ouvertes</div>
+            <div class="stat-value" x-text="repo.open_issues"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Branche par défaut</div>
+            <div class="stat-value" x-text="repo.default_branch"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Total de fichiers</div>
+            <div class="stat-value" x-text="repo.totalFiles"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Total de commits</div>
+            <div class="stat-value" x-text="repo.totalCommits"></div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="mb-2">Description</h3>
+          <p x-text="repo.description || 'Aucune description disponible'"></p>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="mb-2">Contributeurs</h3>
+          <ul class="contributors-list">
+            <template x-for="contrib in repo.contributors" :key="contrib.login">
+              <li class="contributor-item">
+                <img class="contributor-avatar" :src="contrib.avatar_url" :alt="contrib.login">
+                <div class="contributor-info">
+                  <div class="contributor-name" x-text="contrib.login"></div>
+                  <div class="contributor-commits" x-text="`${contrib.commits} commits`"></div>
+                </div>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </div>
+    </template>
   </div>
-</template>
 
+  <script>
+    function dashboard() {
+      return {
+        repo: null,
+        erreur: '',
+        async chargerDonnees() {
+          const params = new URLSearchParams(window.location.search);
+          const url = params.get('url');
 
-<script>
-  function dashboard() {
-    return {
-      repo: null,
-      erreur: '',
-      async chargerDonnees() {
-        const params = new URLSearchParams(window.location.search);
-        const url = params.get('url');
-
-        if (!url) {
-          this.erreur = 'URL non fournie';
-          return;
-        }
-
-        try {
-const res = await fetch('http://localhost:3000/api/github/repositories', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ url })
-});
-          const data = await res.json();
-
-          if (res.ok) {
-            this.repo = data;
-          } else {
-            this.erreur = data.error || 'Erreur inconnue';
+          if (!url) {
+            this.erreur = 'URL non fournie';
+            return;
           }
-        } catch (e) {
-          this.erreur = 'Erreur lors de la connexion au serveur';
-        }
-      }
-    };
-  }
-</script>
 
+          try {
+            const res = await fetch('http://localhost:3000/api/github/repositories', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+              this.repo = data;
+            } else {
+              this.erreur = data.error || 'Erreur inconnue';
+            }
+          } catch (e) {
+            this.erreur = 'Erreur lors de la connexion au serveur';
+          }
+        }
+      };
+    }
+  </script>
 </body>
 </html>
