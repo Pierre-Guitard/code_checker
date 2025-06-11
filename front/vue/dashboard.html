@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="container" x-data="dashboard()" x-init="chargerDonnees()">
-    <h1 class="text-center mb-4">Dashboard GitHub</h1>
+
 
     <template x-if="erreur">
       <div class="error-message" x-text="erreur"></div>
@@ -23,9 +23,10 @@
 
     <template x-if="repo">
       <div class="card">
-        <div class="card-header">
-          <h2 class="card-title" x-text="repo.name"></h2>
-        </div>
+      
+        
+          <h1  class="text-center mb-4" x-text="repo.name"></h1>
+       
 
         <div class="stats-grid">
           <div class="stat-item">
@@ -39,16 +40,6 @@
           </div>
 
           <div class="stat-item">
-            <div class="stat-label">Issues ouvertes</div>
-            <div class="stat-value" x-text="repo.open_issues"></div>
-          </div>
-
-          <div class="stat-item">
-            <div class="stat-label">Branche par défaut</div>
-            <div class="stat-value" x-text="repo.default_branch"></div>
-          </div>
-
-          <div class="stat-item">
             <div class="stat-label">Total de fichiers</div>
             <div class="stat-value" x-text="repo.totalFiles"></div>
           </div>
@@ -59,25 +50,29 @@
           </div>
         </div>
 
-        <div class="mt-4">
-          <h3 class="mb-2">Description</h3>
-          <p x-text="repo.description || 'Aucune description disponible'"></p>
+        <div class="flex flex-col items-start gap-4">
+          <div class="mt-4">
+            <h3 class="mb-2">Description</h3>
+            <p x-text="repo.description || 'Aucune description disponible'"></p>
+          </div>
+          <div class="mt-4">
+            <h3 class="mb-2">Contributeurs</h3>
+            <ul class="flex flex-col items-start gap-2 contributors-list">
+              <template  x-for="contrib in repo.contributors" :key="contrib.login">
+                <li class="contributor-item">
+                  <img class="contributor-avatar" :src="contrib.avatar_url" :alt="contrib.login">
+                  <div class="contributor-info">
+                    <div class="contributor-name" x-text="contrib.login"></div>
+                    <div class="contributor-commits" x-text="`${contrib.commits} commits`"></div>
+                  </div>
+                </li>
+              </template>
+            </ul>
+          </div>
         </div>
+       
 
-        <div class="mt-4">
-          <h3 class="mb-2">Contributeurs</h3>
-          <ul class="contributors-list">
-            <template x-for="contrib in repo.contributors" :key="contrib.login">
-              <li class="contributor-item">
-                <img class="contributor-avatar" :src="contrib.avatar_url" :alt="contrib.login">
-                <div class="contributor-info">
-                  <div class="contributor-name" x-text="contrib.login"></div>
-                  <div class="contributor-commits" x-text="`${contrib.commits} commits`"></div>
-                </div>
-              </li>
-            </template>
-          </ul>
-        </div>
+       
       </div>
     </template>
   </div>
