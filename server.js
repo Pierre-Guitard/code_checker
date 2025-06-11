@@ -2,10 +2,16 @@ const express = require('express')
 const config = require('./src/config/config')
 const githubRoutes = require('./src/routes/githubRoutes')
 const groqRoutes = require('./src/routes/groqRoutes')
+const cors = require('cors')
 
 const app = express()
 
 app.use(express.json())
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
 app.use('/api/github', githubRoutes)
 app.use('/api/groq', groqRoutes)
 
