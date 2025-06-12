@@ -9,15 +9,21 @@
 </head>
 <body x-data="dashboard()" x-init="chargerDonnees()">
 
-  <div class="search-bar mb-4">
-    <input
-      type="text"
-      x-model="githubUrl"
-      placeholder="https://github.com/owner/repo"
-      class="input-url"
-    >
-    <button @click="validerUrl" class="button-valider">Valider</button>
+<div class="search-container">
+  <div class="card" style="max-width: 600px; width: 100%;">
+    <div class="search-bar mb-4 flex items-center gap-2">
+      <input
+        type="text"
+        x-model="githubUrl"
+        placeholder="https://github.com/owner/repo"
+        class="input-url"
+      >
+      <button @click="validerUrl" class="button-valider">Valider</button>
+    </div>
   </div>
+</div>
+
+
 
   <div class="container">
 

@@ -135,6 +135,37 @@ body {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 30vh;
+}
+.input-url {
+  flex: 1; 
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}
+
+.button-valider {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.button-valider:hover {
+  background-color: var(--secondary-color);
+}
+
 
 @keyframes spin {
   to {
