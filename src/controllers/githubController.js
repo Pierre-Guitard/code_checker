@@ -1,9 +1,6 @@
 const config = require('../config/config');
 const axios = require('axios');
 
-// truc pour avoir du delais
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 const githubController = {
   getRepositories: async (req, res) => {
     try {
@@ -15,7 +12,9 @@ const githubController = {
 
       const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
       if (!match) {
-        return res.status(400).json({ error: 'Impossible d’extraire les infos du repo.' });
+        return res.status(400).json({
+          error: "Impossible d'extraire les infos du repo."
+        });
       }
 
       const owner = match[1];
@@ -29,9 +28,7 @@ const githubController = {
       const repoRes = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, { headers });
       const data = repoRes.data;
 
-      // 2. Attente de 2 secondes pour laisser GitHub générer les stats
-      await wait(2000);
-
+      
       const contribRes = await axios.get(
         `https://api.github.com/repos/${owner}/${repo}/stats/contributors`,
         { headers }
@@ -47,7 +44,10 @@ const githubController = {
           avatar_url: c.author?.avatar_url
         }));
 
-        totalCommits = contributors.reduce((sum, c) => sum + c.commits, 0);
+        totalCommits = 0;
+        for (let i = 0; i < contributors.length; i++) {
+          totalCommits = totalCommits + contributors[i].commits;
+        }
       }
 
       // 3. Nombre de fichiers à la racine
