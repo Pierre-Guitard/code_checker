@@ -60,7 +60,8 @@
             <ul class="flex flex-col items-start gap-2 contributors-list">
               <template  x-for="contrib in repo.contributors" :key="contrib.login">
                 <li class="contributor-item">
-                  <img class="contributor-avatar" :src="contrib.avatar_url" :alt="contrib.login">
+                <a :href="`profil.html?url=${encodeURIComponent(repo.full_name)}&author=${contrib.login}`" style="display: flex; align-items: center;">
+                <img class="contributor-avatar" :src="contrib.avatar_url" :alt="contrib.login">
                   <div class="contributor-info">
                     <div class="contributor-name" x-text="contrib.login"></div>
                     <div class="contributor-commits" x-text="`${contrib.commits} commits`"></div>

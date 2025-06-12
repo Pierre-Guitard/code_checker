@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Profil du contributeur</title>
+</head>
+<body>
+  <h1 id="username"></h1>
+  <div id="stats"></div>
+
+  <script>
+    async function chargerProfil() {
+      const params = new URLSearchParams(window.location.search);
+      const fullRepo = params.get('url'); 
+      const author = params.get('author'); 
+
+      if (!fullRepo || !author) {
+        document.getElementById('stats').textContent = 'Paramètres manquants';
+        return;
+      }
+
+      document.getElementById('username').textContent = `Profil de ${author}`;
+
+      const [owner, repo] = fullRepo.split('/');
+
+    
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?author=${author}`);
+      const commits = await res.json();
+
+      let totalCommits = Array.isArray(commits) ? commits.length : 0;
+
+      document.getElementById('stats').innerHTML = `
+        <p><strong>Dépôt :</strong> ${repo}</p>
+        <p><strong>Commits de ${author} :</strong> ${totalCommits}</p>
+        <p><strong>URL GitHub :</strong> <a href="https://github.com/${author}" target="_blank">Profil GitHub</a></p>
+      `;
+    }
+
+    chargerProfil();
+  </script>
+</body>
+</html>

@@ -37,11 +37,12 @@ const githubController = {
       let contributors = [];
       let totalCommits = 0;
 
+
       if (Array.isArray(contribRes.data)) {
         contributors = contribRes.data.map(c => ({
           login: c.author?.login || 'inconnu',
           commits: c.total,
-          avatar_url: c.author?.avatar_url
+          avatar_url: c.author.avatar_url
         }));
 
         totalCommits = 0;
