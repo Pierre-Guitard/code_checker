@@ -24,7 +24,7 @@ const githubController = {
         Authorization: `Bearer ${config.github.token}`
       };
 
-      // 1. Infos principales
+      
       const repoRes = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, { headers });
       const data = repoRes.data;
 
@@ -51,7 +51,7 @@ const githubController = {
         }
       }
 
-      // 3. Nombre de fichiers à la racine
+      
       const contentsRes = await axios.get(`https://api.github.com/repos/${owner}/${repo}/contents`, { headers });
       const totalFiles = Array.isArray(contentsRes.data) ? contentsRes.data.length : 0;
 
