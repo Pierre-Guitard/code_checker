@@ -1,18 +1,37 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <title>Profil du contributeur</title>
+
 </head>
+
 <body>
-  <h1 id="username"></h1>
-  <div id="stats"></div>
+  <!-- Navbar -->
+  <nav style="background: #f8f9fa; padding: 1rem; border-bottom: 1px solid #e9ecef; margin-bottom: 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem;">
+      <a href="dashboard.html"
+        style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #333; font-weight: 500;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9,22 9,12 15,12 15,22" />
+        </svg>
+        Accueil
+      </a>
+    </div>
+  </nav>
+
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+    <h1 id="username"></h1>
+    <div id="stats"></div>
+  </div>
 
   <script>
     async function chargerProfil() {
       const params = new URLSearchParams(window.location.search);
-      const fullRepo = params.get('url'); 
-      const author = params.get('author'); 
+      const fullRepo = params.get('url');
+      const author = params.get('author');
 
       if (!fullRepo || !author) {
         document.getElementById('stats').textContent = 'Paramètres manquants';
@@ -23,7 +42,7 @@
 
       const [owner, repo] = fullRepo.split('/');
 
-    
+
       const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?author=${author}`);
       const commits = await res.json();
 
@@ -39,4 +58,5 @@
     chargerProfil();
   </script>
 </body>
+
 </html>
