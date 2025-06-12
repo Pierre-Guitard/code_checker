@@ -100,6 +100,74 @@
             </ul>
           </div>
         </div>
+        <!-- Section Analyse de Code -->
+        <div class="mt-6 " style="width: 100%;">
+          <h3 class="mb-4 " style="font-size: 1.5rem; font-weight: 600; color: #333;">
+            Analyse de Code</h3>
+
+
+          <!-- Note globale -->
+          <div class="mb-4 "
+            style="padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+              <span style="font-weight: 600; color: #333;">Note globale:</span>
+              <span style="font-size: 1.25rem; font-weight: 700; color: #28a745;"
+                x-text="analyse.note_globale + '/100'"></span>
+            </div>
+            <p style="margin: 0; color: #666;" x-text="analyse.analyse"></p>
+          </div>
+          <div class="flex flex-col items-start gap-4">
+            <!-- Points positifs -->
+            <div class="mb-4"
+              style="padding: 1rem; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;">
+              <h4 style="margin: 0 0 0.75rem 0; color: #155724; font-weight: 600;">Points positifs</h4>
+              <ul style="margin: 0; padding-left: 1rem; color: #155724;">
+                <template x-for="point in analyse.points_positifs" :key="point">
+                  <li style="margin-bottom: 0.25rem;" x-text="point"></li>
+                </template>
+              </ul>
+            </div>
+
+            <!-- Points négatifs -->
+            <div class="mb-4"
+              style="padding: 1rem; background: #f8d7da; border-radius: 8px; border-left: 4px solid #dc3545;">
+              <h4 style="margin: 0 0 0.75rem 0; color: #721c24; font-weight: 600;">Points à améliorer</h4>
+              <ul style="margin: 0; padding-left: 1rem; color: #721c24;">
+                <template x-for="point in analyse.points_negatifs" :key="point">
+                  <li style="margin-bottom: 0.25rem;" x-text="point"></li>
+                </template>
+              </ul>
+            </div>
+
+            <!-- Suggestions -->
+            <div class="mb-4"
+              style="padding: 1rem; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+              <h4 style="margin: 0 0 0.75rem 0; color: #856404; font-weight: 600;">Suggestions d'amélioration</h4>
+              <ul style="margin: 0; padding-left: 1rem; color: #856404;">
+                <template x-for="suggestion in analyse.suggestions" :key="suggestion">
+                  <li style="margin-bottom: 0.25rem;" x-text="suggestion"></li>
+                </template>
+              </ul>
+            </div>
+
+            <!-- Probabilité IA -->
+            <div style="padding: 1rem; background: #e2e3e5; border-radius: 8px; border-left: 4px solid #6c757d;">
+              <h4 style="margin: 0 0 0.75rem 0; color: #495057; font-weight: 600;">Analyse IA</h4>
+              <div style="margin-bottom: 0.5rem;">
+                <span style="font-weight: 500; color: #495057;">Probabilité que ce code soit généré par IA: </span>
+                <span style="font-weight: 700; color: #495057;" x-text="analyse.probabilite_ia + '%'"></span>
+              </div>
+              <div style="color: #6c757d;">
+                <strong>Raisons:</strong>
+                <ul style="margin: 0.25rem 0 0 0; padding-left: 1rem;">
+                  <template x-for="raison in analyse.raisons_ia" :key="raison">
+                    <li style="margin-bottom: 0.25rem;" x-text="raison"></li>
+                  </template>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
 
@@ -114,6 +182,31 @@
         githubUrl: '',
         repo: null,
         erreur: '',
+        analyse: {
+          "note_globale": 80,
+          "analyse": "Le code est bien organisé et suit les bonnes pratiques de développement. Les fichiers sont bien nommés et les fonctions sont bien définies. Le code est également bien commenté, ce qui facilite la compréhension. Cependant, il y a quelques points à améliorer, notamment la gestion des erreurs et la sécurité.",
+          "points_positifs": [
+            "Le code est bien organisé et suit les bonnes pratiques de développement",
+            "Les fichiers sont bien nommés et les fonctions sont bien définies",
+            "Le code est bien commenté",
+            "L'utilisation de modules et de dépendances est bien gérée"
+          ],
+          "points_negatifs": [
+            "La gestion des erreurs est insuffisante",
+            "La sécurité n'est pas suffisamment prise en compte",
+            "Il y a des répétitions de code dans certaines parties du projet"
+          ],
+          "suggestions": [
+            "Ajouter des try-catch pour gérer les erreurs",
+            "Utiliser des bibliothèques de sécurité pour protéger les données sensibles",
+            "Réfactoriser le code pour éviter les répétitions"
+          ],
+          "probabilite_ia": 20,
+          "raisons_ia": [
+            "Le code est trop complexe pour avoir été généré par une IA",
+            "Les commentaires et les noms de variables sont trop personnalisés pour avoir été générés par une IA"
+          ]
+        },
 
         async validerUrl() {
           this.repo = null;
