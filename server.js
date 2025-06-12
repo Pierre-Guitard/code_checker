@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, 'front/vue')));
 app.use('/public', express.static(path.join(__dirname, 'front/public')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'front/vue/index.html'));
+  res.sendFile(path.join(__dirname, 'front/vue/dashboard.html'));
 });
 app.use(express.json())
 app.use(cors({
