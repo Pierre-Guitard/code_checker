@@ -1,8 +1,16 @@
-const express = require('express');
+import express from 'express';
+import githubController from '../controllers/githubController.js';
+
 const router = express.Router();
-const githubController = require('../controllers/githubController');
 
-router.post('/repositories', githubController.getRepositories);
-router.get('/commits', githubController.getCommits);
+router.get('/repositories', githubController.getRepositories);
+router.get('/specific-commit', async (req, res) => {
+    try {
+        const data = await githubController.getSpecificCommit();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
-module.exports = router; 
+export default router; 
