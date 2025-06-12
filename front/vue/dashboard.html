@@ -7,8 +7,19 @@
   <link rel="stylesheet" href="public/dashboard.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div class="container" x-data="dashboard()" x-init="chargerDonnees()">
+<body x-data="dashboard()" x-init="chargerDonnees()">
+
+  <div class="search-bar mb-4">
+    <input
+      type="text"
+      x-model="githubUrl"
+      placeholder="https://github.com/owner/repo"
+      class="input-url"
+    >
+    <button @click="validerUrl" class="button-valider">Valider</button>
+  </div>
+
+  <div class="container">
 
 
     <template x-if="erreur">
@@ -81,34 +92,53 @@
   <script>
     function dashboard() {
       return {
-        repo: null,
-        erreur: '',
-        async chargerDonnees() {
-          const params = new URLSearchParams(window.location.search);
-          const url = params.get('url');
+      
+    githubUrl: '',      
+    repo: null,
+    erreur: '',
 
-          if (!url) {
-            this.erreur = 'URL non fournie';
-            return;
-          }
+    async validerUrl() {
+      this.repo = null;     
+      this.erreur = '';
 
-          try {
-            const res = await fetch('http://localhost:3000/api/github/repositories', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ url })
-            });
-            const data = await res.json();
+      const regex = /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/;
+      if (!regex.test(this.githubUrl.trim())) {
+        this.erreur = "URL GitHub invalide. Format attendu : https://github.com/owner/repo";
+        return;
+      }
 
-            if (res.ok) {
-              this.repo = data;
-            } else {
-              this.erreur = data.error || 'Erreur inconnue';
-            }
-          } catch (e) {
-            this.erreur = 'Erreur lors de la connexion au serveur';
-          }
-        }
+      await this.chargerDonnees(this.githubUrl.trim());
+    },
+
+    async chargerDonnees(url = null) {
+  if (!url) {
+    const params = new URLSearchParams(window.location.search);
+    url = params.get('url');
+  }
+
+  if (!url) {
+    this.erreur = 'URL non fournie';
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:3000/api/github/repositories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      this.repo = data;
+      this.githubUrl = url;
+    } else {
+      this.erreur = data.error || 'Erreur inconnue';
+    }
+  } catch (e) {
+    this.erreur = 'Erreur lors de la connexion au serveur';
+  }
+}
       };
     }
   </script>
