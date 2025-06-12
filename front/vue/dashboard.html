@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard GitHub</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link rel="stylesheet" href="public/dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body x-data="dashboard()" x-init="chargerDonnees()">
+
+  <!-- Navbar -->
+  <nav style="background: #f8f9fa; padding: 1rem; border-bottom: 1px solid #e9ecef; margin-bottom: 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem;">
+      <a href="dashboard.html"
+        style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #333; font-weight: 500;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9,22 9,12 15,12 15,22" />
+        </svg>
+        Accueil
+      </a>
+    </div>
+  </nav>
+
+  <div class="search-container">
+    <div class="card" style="max-width: 600px; width: 100%;">
+      <div class="search-bar flex items-center gap-2">
+        <input type="text" x-model="githubUrl" placeholder="https://github.com/owner/repo" class="input-url">
+        <button @click="validerUrl" class="button-valider">Valider</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="container">
+
+
+    <template x-if="erreur">
+      <div class="error-message" x-text="erreur"></div>
+    </template>
+
+    <template x-if="!repo && !erreur">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+      </div>
+    </template>
+
+    <template x-if="repo">
+      <div class="card">
+
+
+        <h1 class="text-center mb-4" x-text="repo.name"></h1>
+
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Propriétaire</div>
+            <div class="stat-value" x-text="repo.full_name.split('/')[0]"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Langage</div>
+            <div class="stat-value" x-text="repo.language"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Total de fichiers</div>
+            <div class="stat-value" x-text="repo.totalFiles"></div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Total de commits</div>
+            <div class="stat-value" x-text="repo.totalCommits"></div>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-start gap-4">
+          <div class="mt-4">
+            <h3 class="mb-2">Description</h3>
+            <p x-text="repo.description || 'Aucune description disponible'"></p>
+          </div>
+          <div class="mt-4">
+            <h3 class="mb-2">Contributeurs</h3>
+            <ul class="flex flex-col items-start gap-2 contributors-list">
+              <template x-for="contrib in repo.contributors" :key="contrib.login">
+                <li class="contributor-item">
+                  <a :href="`profil.html?url=${encodeURIComponent(repo.full_name)}&author=${contrib.login}`"
+                    style="display: flex; align-items: center;">
+                    <img class="contributor-avatar" :src="contrib.avatar_url" :alt="contrib.login">
+                    <div class="contributor-info">
+                      <div class="contributor-name" x-text="contrib.login"></div>
+                      <div class="contributor-commits" x-text="`${contrib.commits} commits`"></div>
+                    </div>
+                </li>
+              </template>
+            </ul>
+          </div>
+        </div>
+
+
+
+      </div>
+    </template>
+  </div>
+
+  <script>
+    function dashboard() {
+      return {
+
+        githubUrl: '',
+        repo: null,
+        erreur: '',
+
+        async validerUrl() {
+          this.repo = null;
+          this.erreur = '';
+
+          const regex = /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/;
+          if (!regex.test(this.githubUrl.trim())) {
+            this.erreur = "URL GitHub invalide. Format attendu : https://github.com/owner/repo";
+            return;
+          }
+
+          await this.chargerDonnees(this.githubUrl.trim());
+        },
+
+        async chargerDonnees(url = null) {
+          if (!url) {
+            const params = new URLSearchParams(window.location.search);
+            url = params.get('url');
+          }
+
+          if (!url) {
+            this.erreur = 'URL non fournie';
+            return;
+          }
+
+          try {
+            const res = await fetch('http://localhost:3000/api/github/repositories', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+              this.repo = data;
+              this.githubUrl = url;
+            } else {
+              this.erreur = data.error || 'Erreur inconnue';
+            }
+          } catch (e) {
+            this.erreur = 'Erreur lors de la connexion au serveur';
+          }
+        }
+      };
+    }
+  </script>
+</body>
+
+</html>
