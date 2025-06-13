@@ -70,7 +70,7 @@
 
         <div class="container">
             <h1>Code Checker - Informations du Commit</h1>
-            <button onclick="testGithub()">Récupérer les informations du commit</button>
+            <button onclick="getCommitInfo()">Récupérer les informations du commit</button>
             <div id="commitInfo"></div>
         </div>
     </body>
@@ -80,32 +80,11 @@
 
         async function getCommitInfo() {
             try {
-                const response = await axios.get('/api/github/specific-commit');
-                const data = await response.json();
-                console.log('data:', data);
+                const response = await axios.get('http://localhost:3000/api/github/specific-commit');
+                const data = response.data;
+              // console.log('response:', response);
+               console.log('data:', data);
 
-                const commitInfo = data[0];
-                console.log('Test commitInfo:', commitInfo);
-
-                let html = `
-                    <h2>Détails du Commit</h2>
-                    <p><strong>Auteur:</strong> ${commitInfo.commit.author.name}</p>
-                    <p><strong>Date:</strong> ${new Date(commitInfo.commit.author.date).toLocaleString()}</p>
-                    <p><strong>Message:</strong> ${commitInfo.commit.message}</p>
-                `;
-
-                commitInfo.files.forEach(file => {
-                    html += `
-                        <div class="file-info">
-                            <p><strong>Fichier:</strong> ${file.filename}</p>
-                            <p><strong>Status:</strong> ${file.status}</p>
-                            <p><strong>Modifications:</strong> +${file.additions} -${file.deletions}</p>
-                            <p><strong>Modifications:</strong>${file.patch}</p>
-                        </div>
-                    `;
-                });
-
-                document.getElementById('commitInfo').innerHTML = html;
             } catch (error) {
                 console.error('Erreur:', error);
                 document.getElementById('commitInfo').innerHTML = `
