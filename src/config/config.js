@@ -1,5 +1,5 @@
 require('dotenv').config();
-console.log(process.env.GITHUB_TOKEN);
+
 
 module.exports = {
     port: process.env.PORT || 3000,

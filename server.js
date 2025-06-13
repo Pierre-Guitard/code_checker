@@ -10,28 +10,27 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 
 // Configuration EJS
-app.set('view engine', 'ejs')
-app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
+
+app.use(express.static(path.join(__dirname, 'front/vue')));
+app.use('/public', express.static(path.join(__dirname, 'front/public')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'front/vue/dashboard.html'));
+});
 app.use(express.json())
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
-
-// Servir les fichiers statiques
-app.use(express.static(path.join(__dirname, 'public')))
-
 app.use('/api/github', githubRoutes)
 app.use('/api/groq', groqRoutes)
-
-app.get('/', (req, res) => {
-  res.render('index')
-})
 
 app.get('/test-groq', (req, res) => {
   res.render('testGroq')

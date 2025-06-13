@@ -3,7 +3,7 @@ import githubController from '../controllers/githubController.js';
 
 const router = express.Router();
 
-router.get('/repositories', githubController.getRepositories);
+router.post('/repositories', githubController.getRepositories);
 router.get('/specific-commit', githubController.getAllCommitsFromUser);
 // router.get('/specific-commit', async (req, res) => {
 //     try {
@@ -15,3 +15,5 @@ router.get('/specific-commit', githubController.getAllCommitsFromUser);
 // });
 
 export default router; 
+
+
