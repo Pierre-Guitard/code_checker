@@ -361,12 +361,8 @@
 
 
         validerReponse(index) {
-          console.log(this.questions.length);
-          console.log(this.reponse_selectionnee[index]);
-          console.log(this.questions[index].bonne_reponse);
-
           if (this.reponse_selectionnee[index] === this.questions[index].bonne_reponse[0]) {
-            console.log('reponse valide');
+
             this.note++;
             this.x++;
             this.reponse_validee = true;
@@ -375,7 +371,6 @@
             this.reponse_validee_couleur_texte = 'white';
             this.reponse_validee_couleur_texte_message = 'Réponse valide';
           } else {
-            console.log('reponse incorrecte');
             this.x++;
             this.reponse_validee = false;
             this.reponse_validee_message = 'Réponse incorrecte';

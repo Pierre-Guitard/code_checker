@@ -84,8 +84,6 @@ const githubController = {
       commitData.forEach(commit => {
         urlArray.push(commit.url)
       });
-      // res.json(urlArray);
-      // console.log("COMMITDATA", commitData);
 
       const commitsContent = [];
       await Promise.all(
@@ -107,7 +105,6 @@ const githubController = {
         })
       );
 
-      console.log("commitsCOntent", commitsContent);
       const codeReview = await axios.post('http://localhost:3000/api/groq/review', commitsContent)
       res.json(codeReview.data)
 
