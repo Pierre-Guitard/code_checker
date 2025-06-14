@@ -1,9 +1,8 @@
-const express = require('express');
+import express from 'express';
+import groqController from '../controllers/groqController.js';
+
 const router = express.Router();
-const groqController = require('../controllers/groqController');
 
+router.post('/review', groqController.analyseCommits)
 
-router.post('/analyze', groqController.analyzeCode);
-
-
-module.exports = router; 
+export default router; 
