@@ -2,32 +2,32 @@ name: Node.js Backend CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Cloner le code
-      uses: actions/checkout@v3
+      - name: Cloner le code
+        uses: actions/checkout@v3
 
-    - name:  Installer Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18' 
+      - name: Installer Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
 
-    - name: installation des dépendances
-      run: npm install
+      - name: installation des dépendances
+        run: npm install
 
-    - name:  Lancer les tests 
-      run: |
-        if [ -f package.json ] && grep -q "\"test\":" package.json; then
-          npm test
-        else
-          echo "Pas de tests définis"
-        fi
+      - name: Lancer les tests
+        run: |
+          if [ -f package.json ] && grep -q "\"test\":" package.json; then
+            npm test
+          else
+            echo "Pas de tests définis"
+          fi
 
-    - name:  le serveur démarre
-      run: |
-        node -e "require('./src/config/config'); console.log('Serveur OK');"
+      - name: le serveur démarre
+        run: |
+          node --input-type=module -e "import('./src/config/config.js').then(() => console.log('Serveur OK'));"
