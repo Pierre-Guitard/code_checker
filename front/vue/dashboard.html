@@ -169,9 +169,39 @@
           </div>
         </div>
 
+        <div x-data="{ x: 0 }" class="mt-6 " style="width: 100%;">
+          <h3 class="mb-4 " style="font-size: 1.5rem; font-weight: 600; color: #333;">
+            Quizz
+          </h3>
+          <div class="mb-4">
 
 
-      </div>
+            <div class="flex flex-col items-start gap-4">
+
+              <div class="mb-4"
+                style="padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #dee2e6;">
+                <h4 style="margin: 0 0 0.75rem 0; color: #333; font-weight: 600;"
+                  x-text=" note + '/' + nombreQuestions() + ' bonnes réponses'"></h4>
+                <h4 style="margin: 0 0 0.75rem 0; color: #333; font-weight: 600;" x-text="questions[x].question">
+                </h4>
+
+                <ul style="margin: 0; padding-left: 1rem; color: #333;">
+                  <template x-for="reponse in questions[x].reponses_possibles" :key="reponse">
+                    <div style="margin-bottom: 0.25rem;">
+                      <input type="radio" name="reponse" :value="reponse" x-model="reponse_selectionnee[x]">
+                      <span x-text="reponse"></span>
+                    </div>
+                  </template>
+                </ul>
+                <button @click="validerReponse(x)" class="button-valider">Valider</button>
+              </div>
+
+            </div>
+          </div>
+
+
+
+        </div>
     </template>
   </div>
 
@@ -206,7 +236,157 @@
             "Le code est trop complexe pour avoir été généré par une IA",
             "Les commentaires et les noms de variables sont trop personnalisés pour avoir été générés par une IA"
           ]
+
         },
+
+        questions: [
+          {
+            "question": "Quelle est une bonne pratique en matière de nommage de fichiers ?",
+            "reponses_possibles": [
+              "Utiliser des noms génériques comme file1.js",
+              "Nommer les fichiers en fonction de leur fonctionnalité",
+              "Utiliser uniquement des lettres majuscules",
+              "Ajouter des espaces dans les noms de fichiers"
+            ],
+            "bonne_reponse": ["Nommer les fichiers en fonction de leur fonctionnalité"]
+          },
+          {
+            "question": "Quel est l’avantage principal de bien commenter son code ?",
+            "reponses_possibles": [
+              "Rendre le code plus long",
+              "Permettre aux IA de mieux l’analyser",
+              "Faciliter la compréhension pour les autres développeurs",
+              "Augmenter la performance"
+            ],
+            "bonne_reponse": ["Faciliter la compréhension pour les autres développeurs"]
+          },
+          {
+            "question": "Pourquoi faut-il éviter les répétitions de code ?",
+            "reponses_possibles": [
+              "Cela rend le code plus lent",
+              "Cela augmente les risques d’erreurs lors des modifications",
+              "Cela rend le code plus beau",
+              "Cela facilite l’usage d’IA"
+            ],
+            "bonne_reponse": ["Cela augmente les risques d’erreurs lors des modifications"]
+          },
+          {
+            "question": "Quelle est une bonne façon de gérer les erreurs dans le code ?",
+            "reponses_possibles": [
+              "Ignorer les erreurs et laisser le code s’exécuter",
+              "Utiliser des alertes",
+              "Ajouter des blocs try-catch",
+              "Redémarrer le programme à chaque erreur"
+            ],
+            "bonne_reponse": ["Ajouter des blocs try-catch"]
+          },
+          {
+            "question": "Pourquoi est-il important de prendre en compte la sécurité dans le code ?",
+            "reponses_possibles": [
+              "Pour éviter les virus informatiques",
+              "Pour rendre le code plus rapide",
+              "Pour protéger les données sensibles et éviter les failles",
+              "Pour mieux organiser les fichiers"
+            ],
+            "bonne_reponse": ["Pour protéger les données sensibles et éviter les failles"]
+          },
+          {
+            "question": "Quel est le rôle des modules dans un projet ?",
+            "reponses_possibles": [
+              "Ralentir l’exécution du code",
+              "Ajouter des fonctionnalités externes de manière propre",
+              "Remplacer les fonctions internes",
+              "Compresser le code automatiquement"
+            ],
+            "bonne_reponse": ["Ajouter des fonctionnalités externes de manière propre"]
+          },
+          {
+            "question": "Que signifie refactoriser du code ?",
+            "reponses_possibles": [
+              "Le réécrire entièrement",
+              "Changer uniquement les noms de variables",
+              "Réorganiser et améliorer sans changer le comportement",
+              "Ajouter plus de commentaires"
+            ],
+            "bonne_reponse": ["Réorganiser et améliorer sans changer le comportement"]
+          },
+          {
+            "question": "Pourquoi des noms de variables personnalisés peuvent indiquer un code humain ?",
+            "reponses_possibles": [
+              "Parce qu’ils sont générés aléatoirement",
+              "Parce qu’ils sont souvent en anglais",
+              "Parce qu’ils reflètent une intention ou une logique métier",
+              "Parce qu’ils sont toujours courts"
+            ],
+            "bonne_reponse": ["Parce qu’ils reflètent une intention ou une logique métier"]
+          },
+          {
+            "question": "Quelle bibliothèque est souvent utilisée pour sécuriser les mots de passe ?",
+            "reponses_possibles": [
+              "bcrypt",
+              "lodash",
+              "express",
+              "axios"
+            ],
+            "bonne_reponse": ["bcrypt"]
+          },
+          {
+            "question": "Quel est un indicateur que le code est bien structuré ?",
+            "reponses_possibles": [
+              "Il n’y a qu’un seul fichier",
+              "Toutes les fonctions sont très longues",
+              "Chaque fonctionnalité est isolée dans un module",
+              "Les variables sont globales"
+            ],
+            "bonne_reponse": ["Chaque fonctionnalité est isolée dans un module"]
+          }
+        ],
+
+        reponse_selectionnee: [],
+        reponse_validee: false,
+        reponse_validee_message: '',
+        reponse_validee_couleur: '',
+        reponse_validee_couleur_texte: '',
+        reponse_validee_couleur_texte_message: '',
+        reponse_validee_couleur_texte_message_message: '',
+        reponse_validee_couleur_texte_message_message_message: '',
+        reponse_validee_couleur_texte_message_message_message_message: '',
+        reponse_validee_couleur_texte_message_message_message_message_message: '',
+        note: 0,
+
+
+        nombreQuestions() {
+          return this.questions.length;
+        },
+
+
+
+        validerReponse(index) {
+          console.log(this.questions.length);
+          console.log(this.reponse_selectionnee[index]);
+          console.log(this.questions[index].bonne_reponse);
+
+          if (this.reponse_selectionnee[index] === this.questions[index].bonne_reponse[0]) {
+            console.log('reponse valide');
+            this.note++;
+            this.x++;
+            this.reponse_validee = true;
+            this.reponse_validee_message = 'Réponse valide';
+            this.reponse_validee_couleur = 'green';
+            this.reponse_validee_couleur_texte = 'white';
+            this.reponse_validee_couleur_texte_message = 'Réponse valide';
+          } else {
+            console.log('reponse incorrecte');
+            this.x++;
+            this.reponse_validee = false;
+            this.reponse_validee_message = 'Réponse incorrecte';
+            this.reponse_validee_couleur = 'red';
+            this.reponse_validee_couleur_texte = 'white';
+            this.reponse_validee_couleur_texte_message = 'Réponse incorrecte';
+          }
+        },
+
+
 
         async validerUrl() {
           this.repo = null;
