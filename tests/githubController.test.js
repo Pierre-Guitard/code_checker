@@ -1,24 +1,30 @@
-const githubController = require("../src/controllers/githubController");
-const axios = require('axios');
+import { jest } from '@jest/globals';
 
-jest.mock('axios'); 
+jest.unstable_mockModule('axios', () => ({
+  default: {
+    get: jest.fn()
+  }
+}));
+const axios = (await import('axios')).default;
+const githubController = (await import('../src/controllers/githubController.js')).default;
+
 
 function mockResponse() {
   const res = {};
-  res.status = jest.fn().mockReturnValue(res); 
+  res.status = jest.fn().mockReturnValue(res);
   res.json = jest.fn().mockReturnValue(res);
   return res;
 }
 
 
-it ('doit retourner 400 si pas durl', async () => {
-    const req = { body: {}, query: {}};
-    const res = mockResponse();
+it('doit retourner 400 si pas durl', async () => {
+  const req = { body: {}, query: {} };
+  const res = mockResponse();
 
-    await githubController.getRepositories(req, res);
+  await githubController.getRepositories(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-expect(res.json).toHaveBeenCalledWith({ error: 'URL GitHub invalide.' });
+  expect(res.status).toHaveBeenCalledWith(400);
+  expect(res.json).toHaveBeenCalledWith({ error: 'URL GitHub invalide.' });
 })
 
 
@@ -44,11 +50,11 @@ it('doit retourner les infos du dépôt si tout fonctionne', async () => {
   axios.get
     .mockResolvedValueOnce({ data: { name: 'code_checker', full_name: 'Pierre-Guitard/code_checker', description: '', language: 'JavaScript' } })
     .mockResolvedValueOnce({ data: [{ author: { login: 'Pierre-Guitard', avatar_url: 'img' }, total: 5 }] })
-    .mockResolvedValueOnce({ data: [{} , {} , {}] }); 
+    .mockResolvedValueOnce({ data: [{}, {}, {}] });
 
   await githubController.getRepositories(req, res);
 
-  expect(res.status).not.toHaveBeenCalled(); 
+  expect(res.status).not.toHaveBeenCalled();
   expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
     name: 'code_checker',
     totalCommits: 5,
