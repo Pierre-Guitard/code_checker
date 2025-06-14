@@ -1,11 +1,14 @@
-const express = require('express')
-const config = require('./src/config/config')
-const githubRoutes = require('./src/routes/githubRoutes')
-const groqRoutes = require('./src/routes/groqRoutes')
-const cors = require('cors')
-const path = require('path')
-const app = express()
+import 'dotenv/config'
+import express from 'express'
+import cors from 'cors'
+import path from 'path'
+import githubRoutes from './src/routes/githubRoutes.js'
+import groqRoutes from './src/routes/groqRoutes.js'
 
+const __dirname = path.resolve()
+
+const app = express()
+const port = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'front/vue')));
 app.use('/public', express.static(path.join(__dirname, 'front/public')));
@@ -19,19 +22,15 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
-
 app.use('/api/github', githubRoutes)
 app.use('/api/groq', groqRoutes)
 
-app.get('/', (req, res) => {
-  res.json({ message: 'API de vérification de code' })
-})
 
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).json({ error: 'Une erreur est survenue!' })
 })
 
-app.listen(config.port, () => {
-  console.log(`Serveur démarré sur le port ${config.port}`)
+app.listen(port, () => {
+  console.log(`Serveur démarré sur le port ${port}`)
 })

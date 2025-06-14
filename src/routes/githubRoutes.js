@@ -1,7 +1,10 @@
-const express = require('express');
+import express from 'express';
+import githubController from '../controllers/githubController.js';
+
 const router = express.Router();
-const githubController = require('../controllers/githubController');
 
 router.post('/repositories', githubController.getRepositories);
+router.get('/specific-commit', githubController.getAllCommitsFromUser);
+export default router; 
 
-module.exports = router;
+
