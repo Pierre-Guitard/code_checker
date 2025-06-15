@@ -1,5 +1,4 @@
 import Groq from "groq-sdk";
- 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const groqController = {
@@ -24,9 +23,7 @@ const groqController = {
             "meilleur gestion des call api"
         ]
     }
-
     `;
-
       const response = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         messages: [
@@ -34,13 +31,11 @@ const groqController = {
             { role: "user", content: JSON.stringify(commitsContent) }
         ]
       });
-      
+
       const message = response.choices?.[0]?.message?.content || "";
       const jsonMatch = message.match(/\{[\s\S]*\}/);
       const analysis = jsonMatch ? JSON.parse(jsonMatch[0]) : { raw: message };
-
       res.json({ result: analysis });
-
     } catch (error) {
       console.error("Erreur Groq:", error.message || error);
       res.status(500).json({ error: "Erreur lors de l'analyse par Groq." });

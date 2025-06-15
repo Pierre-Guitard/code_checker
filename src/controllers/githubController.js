@@ -80,6 +80,7 @@ const githubController = {
       const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/commits?author=${author}`, header);
       const commitData = response.data;
       commitData.forEach(commit => {
+
         if (commit.parents.length < 2) urlArray.push(commit.url)
       })        
         const commitsContent = [];
@@ -103,6 +104,7 @@ const githubController = {
         );
         const codeReview = await axios.post('http://localhost:3000/api/groq/review', commitsContent)
         res.json(codeReview.data)
+
 
     } catch (error) {
       console.error('Erreur lors de la récupération du commit:', error.message);
