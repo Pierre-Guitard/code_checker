@@ -2,20 +2,17 @@ import Groq from "groq-sdk";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const groqController = {
-  analyseCommits: async (req, res) => {
+  analyseCommits: async (req, res) => {;
     const commitsContent = req.body
-    const formattedCode = commitsContent.map(file => {
-      return `// ${file.filename}\n${file.content}`;
-    }).join('\n\n');
+
     try {
-      const prompt = `Voici tous le code produit:
-    Analyse l'ensemble de ces commits, tu fourniras 4 elements en repondant UNIQUEMENT EN JSON:
+    const prompt = `
+    Analyse l'ensemble de ces commits, fournis 4 elements en repondant EN JSON:
     1. Une note sur 5, en prenant en compte que le contributeur est de niveau bac+3
     2. La probabilité en pourcentage que le code soit généré par IA
     3. Résumé des points forts et des points faibles
     4. 1 ou 2 suggestions d'amélioration
     
-    voici le code de l'auteur ${formattedCode}
     Voici un exemple de la structure que tu dois adopter: 
     {
         "score": 3,
@@ -28,14 +25,13 @@ const groqController = {
     }
     `;
       const response = await groq.chat.completions.create({
-        model: "gemma2-9b-it",
+        model: "llama-3.3-70b-versatile",
         messages: [
-          {
-            role: "user",
-            content: prompt
-          }
+            { role: "user", content: prompt },
+            { role: "user", content: JSON.stringify(commitsContent) }
         ]
       });
+
       const message = response.choices?.[0]?.message?.content || "";
       const jsonMatch = message.match(/\{[\s\S]*\}/);
       const analysis = jsonMatch ? JSON.parse(jsonMatch[0]) : { raw: message };
