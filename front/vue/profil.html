@@ -1,69 +1,79 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-<head>
-  <meta charset="UTF-8">
-  <title>Profil du contributeur</title>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <head>
+    <meta charset="UTF-8">
+    <title>Profil du contributeur</title>
+      <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-  <link rel="stylesheet" href="public/dashboard.css">
+    <link rel="stylesheet" href="public/dashboard.css">
 
-</head>
+  </head>
 
-<body>
-  <nav style="background: #f8f9fa; padding: 1rem; border-bottom: 1px solid #e9ecef; margin-bottom: 2rem;">
-    <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem;">
-      <a href="dashboard.html"
-        style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #333; font-weight: 500;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9,22 9,12 15,12 15,22" />
-        </svg>
-        Accueil
-      </a>
-    </div>
-  </nav>
-
-    <div class="container">
-    <div class="card">
-      <div class="card-header">
-        <h1 class="card-title" id="username"></h1>
+  <body>
+    <nav style="background: #f8f9fa; padding: 1rem; border-bottom: 1px solid #e9ecef; margin-bottom: 2rem;">
+      <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem;">
+        <a href="dashboard.html"
+          style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #333; font-weight: 500;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9,22 9,12 15,12 15,22" />
+          </svg>
+          Accueil
+        </a>
       </div>
-      <div id="stats">
+    </nav>
+
+      <div class="container" x-data = "profileInfos()" x-init="chargerProfil()">
+      <div class="card">
+        <div class="card-header">
+          <h1 class="card-title"  x-text="author"></h1>
+        </div>
+      
+        <div class="loading" x-show="loading">
+          <div class="loading-spinner"></div>
+        </div>
+
+        <div id="stats" x-show="!loading">
+          <p><strong>Probabilité d'IA:</strong> <span x-text="ai_probability"></span> </p>
+          <p><strong>Forces et faiblesses du code:</strong> <span x-text="strengh_weakness"></span> </p>
+          <p><strong>Qualité du code:</strong> <span x-text="score"></span>/5</p>
+        </div>
+        <button @click="history.back()" class="button-valider">Revenir en arriere</button>
       </div>
     </div>
-  </div>
- 
-  <script>
-    async function chargerProfil() {
-      const params = new URLSearchParams(window.location.search);
-      const fullRepo = params.get('url');
-      const author = params.get('author');
+  
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      function profileInfos(){
+        return{
+          author: '',
+          ai_probability: '',
+          strengh_weakness: '',
+          score: '',
 
-      if (!fullRepo || !author) {
-        document.getElementById('stats').textContent = 'Paramètres manquants';
-        return;
+          async chargerProfil() {
+            this.loading = true;
+            const params = new URLSearchParams(window.location.search);
+            const fullRepo = params.get('url');
+            this.author = params.get('author');
+            const [owner, repo] = fullRepo.split('/');
+            try{
+              const res = await axios.post(`http://localhost:3000/api/github/specific-commit`, {owner, repo, author: this.author})
+              const data = res.data.result;
+              this.ai_probability = data.ai_probability
+              this.strengh_weakness = data.strengh_weakness
+              this.score = data.score
+              this.loading = false
+            }catch(e){
+              console.log(e)
+              this.loading = false
+              document.getElementById('stats').innerHTML = `
+              <p>Une erreur est survenue lors du chargement des données du profil</p>`;
+            }
+          }
+        }
       }
-
-      document.getElementById('username').textContent = `Profil de ${author}`;
-
-      const [owner, repo] = fullRepo.split('/');
-
-
-      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?author=${author}`);
-      const commits = await res.json();
-
-      let totalCommits = Array.isArray(commits) ? commits.length : 0;
-
-      document.getElementById('stats').innerHTML = `
-        <p><strong>Dépôt :</strong> ${repo}</p>
-        <p><strong>Commits de ${author} :</strong> ${totalCommits}</p>
-        <p><strong>URL GitHub :</strong> <a href="https://github.com/${author}" target="_blank">Profil GitHub</a></p>
-      `;
-    }
-
-    chargerProfil();
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>
