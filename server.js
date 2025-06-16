@@ -8,7 +8,7 @@ import groqRoutes from './src/routes/groqRoutes.js'
 const __dirname = path.resolve()
 
 const app = express()
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 
 app.use(express.static(path.join(__dirname, 'front/vue')));
 app.use('/public', express.static(path.join(__dirname, 'front/public')));
