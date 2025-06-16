@@ -281,7 +281,7 @@
           try {
          
             console.log('Récupération du code...');
-            const repoCodeRes = await fetch('http://localhost:3000/api/github/get-repository-code', {
+            const repoCodeRes = await fetch('/api/github/get-repository-code', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ url: this.githubUrl })
@@ -297,7 +297,7 @@
  
  
             console.log('Analyse du code...');
-            const analyseRes = await fetch('http://localhost:3000/api/groq/analyze-repository', {
+            const analyseRes = await fetch('/api/groq/analyze-repository', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(repoCodeData.repoCode)
@@ -348,7 +348,7 @@
           }
  
           try {
-            const res = await fetch('http://localhost:3000/api/github/repositories', {
+            const res = await fetch('/api/github/repositories', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ url })
