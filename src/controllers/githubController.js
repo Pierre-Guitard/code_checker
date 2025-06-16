@@ -50,7 +50,8 @@ const githubController = {
           totalCommits = totalCommits + contributors[i].commits;
         }
       }
-
+      console.log("test");
+      
       const contentsRes = await axios.get(`https://api.github.com/repos/${owner}/${repo}/contents`, { headers });
       const totalFiles = Array.isArray(contentsRes.data) ? contentsRes.data.length : 0;
 
