@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-
+ 
 <head>
   <meta charset="UTF-8">
   <title>Dashboard GitHub</title>
@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="public/dashboard.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-
+ 
 <body x-data="dashboard()" x-init="chargerDonnees()">
-
+ 
   <!-- Navbar -->
   <nav style="background: #f8f9fa; padding: 1rem; border-bottom: 1px solid #e9ecef; margin-bottom: 2rem;">
     <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem;">
@@ -24,7 +24,7 @@
       </a>
     </div>
   </nav>
-
+ 
   <div class="search-container">
     <div class="card" style="max-width: 600px; width: 100%;">
       <div class="search-bar flex items-center gap-2">
@@ -33,51 +33,51 @@
       </div>
     </div>
   </div>
-
-
-
+ 
+ 
+ 
   <div class="container">
-
-
+ 
+ 
     <template x-if="erreur">
       <div class="error-message" x-text="erreur"></div>
     </template>
-
+ 
     <template x-if="!repo && !erreur">
       <div class="loading">
         <div class="loading-spinner"></div>
       </div>
     </template>
-
+ 
     <template x-if="repo">
       <div class="card">
-
-
+ 
+ 
         <h1 class="text-center mb-4" x-text="repo.name"></h1>
-
-
+ 
+ 
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-label">Propriétaire</div>
             <div class="stat-value" x-text="repo.full_name.split('/')[0]"></div>
           </div>
-
+ 
           <div class="stat-item">
             <div class="stat-label">Langage</div>
             <div class="stat-value" x-text="repo.language"></div>
           </div>
-
+ 
           <div class="stat-item">
             <div class="stat-label">Total de fichiers</div>
             <div class="stat-value" x-text="repo.totalFiles"></div>
           </div>
-
+ 
           <div class="stat-item">
             <div class="stat-label">Total de commits</div>
             <div class="stat-value" x-text="repo.totalCommits"></div>
           </div>
         </div>
-
+ 
         <div class="flex flex-col items-start gap-4">
           <div class="mt-4">
             <h3 class="mb-2">Description</h3>
@@ -104,7 +104,7 @@
         <div class="mt-6 " style="width: 100%;">
           <h3 class="mb-4 " style="font-size: 1.5rem; font-weight: 600; color: #333;">
             Analyse de Code</h3>
-
+ 
           <!-- Indicateur de chargement -->
           <template x-if="chargementAnalyse">
             <div class="loading">
@@ -112,7 +112,7 @@
               <p>Analyse du code en cours...</p>
             </div>
           </template>
-
+ 
           <!-- Analyse disponible -->
           <template x-if="!chargementAnalyse && analyse">
             <div>
@@ -137,7 +137,7 @@
                 </template>
               </ul>
             </div>
-
+ 
             <!-- Points négatifs -->
             <div class="mb-4"
               style="padding: 1rem; background: #f8d7da; border-radius: 8px; border-left: 4px solid #dc3545;">
@@ -148,7 +148,7 @@
                 </template>
               </ul>
             </div>
-
+ 
             <!-- Suggestions -->
             <div class="mb-4"
               style="padding: 1rem; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
@@ -159,7 +159,7 @@
                 </template>
               </ul>
             </div>
-
+ 
             <!-- Probabilité IA -->
             <div style="padding: 1rem; background: #e2e3e5; border-radius: 8px; border-left: 4px solid #6c757d;">
               <h4 style="margin: 0 0 0.75rem 0; color: #495057; font-weight: 600;">Analyse IA</h4>
@@ -179,15 +179,12 @@
             </div>
           </template>
         </div>
-
-      </div>
-
-
+ 
         <div x-data="{ x: 0 }" class="mt-6 " style="width: 100%;">
           <h3 class="mb-4 " style="font-size: 1.5rem; font-weight: 600; color: #333;">
             Quizz
           </h3>
-          
+         
           <template x-if="!chargementAnalyse && questions.length > 0">
             <div class="mb-4">
               <div class="flex flex-col items-start gap-4">
@@ -196,7 +193,7 @@
                     x-text=" 'note : ' + note + '/' + nombreQuestions() "></h4>
                   <h4 style="margin: 0 0 0.75rem 0; color: #333; font-weight: 600;" x-text="questions[x] ? questions[x].question : ''">
                   </h4>
-
+ 
                   <ul style="margin: 0; padding-left: 1rem; color: #333;" x-show="questions[x]">
                     <template x-for="reponse in questions[x] ? questions[x].reponses_possibles : []" :key="reponse">
                       <div style="margin-bottom: 0.25rem;">
@@ -210,29 +207,28 @@
               </div>
             </div>
           </template>
-
+ 
           <template x-if="!chargementAnalyse && questions.length === 0 && analyse">
             <div class="mb-4" style="padding: 1rem; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
               <p style="margin: 0; color: #856404;">Aucune question de quiz n'a été générée pour ce repository.</p>
             </div>
           </template>
-
+ 
         </div>
     </template>
   </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+ 
   <script>
     function dashboard() {
       return {
-
+ 
         githubUrl: '',
         repo: null,
         erreur: '',
         analyse: null,
         questions: [],
         chargementAnalyse: false,
-
+ 
         reponse_selectionnee: [],
         reponse_validee: false,
         reponse_validee_message: '',
@@ -244,17 +240,17 @@
         reponse_validee_couleur_texte_message_message_message_message: '',
         reponse_validee_couleur_texte_message_message_message_message_message: '',
         note: 0,
-
-
+ 
+ 
         nombreQuestions() {
           return this.questions.length;
         },
-
-
-
+ 
+ 
+ 
         validerReponse(index) {
           if (this.reponse_selectionnee[index] === this.questions[index].bonne_reponse[0]) {
-
+ 
             this.note++;
             this.x++;
             this.reponse_validee = true;
@@ -271,95 +267,86 @@
             this.reponse_validee_couleur_texte_message = 'Réponse incorrecte';
           }
         },
-
+ 
         async analyserRepository() {
-          // Active le mode de chargement (spinner ou désactivation UI)
+ 
           this.chargementAnalyse = true;
-
-          // Réinitialise les erreurs précédentes
+ 
           this.erreur = '';
-
-          // Réinitialise l’analyse précédente
+ 
           this.analyse = null;
-
-          // Vide la liste des questions du précédent quiz
+ 
           this.questions = [];
-
+ 
           try {
-            // 1. Récupérer le code source du repository GitHub à partir de l'URL saisie
+         
             console.log('Récupération du code...');
             const repoCodeRes = await fetch('http://localhost:3000/api/github/get-repository-code', {
-              method: 'POST', // On envoie l’URL du repo en POST
-              headers: { 'Content-Type': 'application/json' }, // Format JSON
-              body: JSON.stringify({ url: this.githubUrl }) // Données envoyées : l'URL saisie par l'utilisateur
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: this.githubUrl })
             });
-
-            // Réponse JSON du back contenant le code récupéré ou une erreur
+ 
+ 
             const repoCodeData = await repoCodeRes.json();
-
-            // Si une erreur est survenue côté back (ex : URL invalide, repo introuvable)
+ 
             if (!repoCodeRes.ok) {
               this.erreur = repoCodeData.error || 'Erreur lors de la récupération du code';
-              return; // On arrête l’analyse ici
+              return;
             }
-
-            // 2. Envoyer le code du repo au backend pour analyse via Groq
+ 
+ 
             console.log('Analyse du code...');
             const analyseRes = await fetch('http://localhost:3000/api/groq/analyze-repository', {
-              method: 'POST', // On envoie le code récupéré
-              headers: { 'Content-Type': 'application/json' }, // Format JSON
-              body: JSON.stringify(repoCodeData.repoCode) // Payload = tableau de fichiers { chemin, contenu }
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(repoCodeData.repoCode)
             });
-
-            // Réponse contenant les résultats d’analyse (note, résumé, quiz, etc.)
+ 
             const analyseData = await analyseRes.json();
-
-            // Si tout s’est bien passé et que l’analyse contient un résultat
+ 
             if (analyseRes.ok && analyseData.result) {
-              this.analyse = analyseData.result; // Stocke l’analyse globale
-              this.questions = analyseData.result.quizz || []; // Stocke les questions (si présentes)
+              this.analyse = analyseData.result;
+              this.questions = analyseData.result.quizz || [];
               console.log('Analyse terminée:', this.analyse);
             } else {
-              // Sinon, on affiche l'erreur côté utilisateur
               this.erreur = analyseData.error || 'Erreur lors de l\'analyse';
             }
-
+ 
           } catch (e) {
-            // En cas de problème réseau, serveur éteint, etc.
             console.error('Erreur:', e);
             this.erreur = 'Erreur lors de la connexion au serveur';
           } finally {
-            // Désactive le mode de chargement quoi qu’il arrive
             this.chargementAnalyse = false;
           }
         },
-
-
+ 
+ 
         async validerUrl() {
           this.repo = null;
           this.erreur = '';
-
+ 
           const regex = /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/;
           if (!regex.test(this.githubUrl.trim())) {
             this.erreur = "URL GitHub invalide. Format attendu : https://github.com/owner/repo";
             return;
           }
-
+ 
           await this.chargerDonnees(this.githubUrl.trim());
           await this.analyserRepository();
         },
-
+ 
         async chargerDonnees(url = null) {
           if (!url) {
             const params = new URLSearchParams(window.location.search);
             url = params.get('url');
           }
-
+ 
           if (!url) {
             this.erreur = 'URL non fournie';
             return;
           }
-
+ 
           try {
             const res = await fetch('http://localhost:3000/api/github/repositories', {
               method: 'POST',
@@ -367,7 +354,7 @@
               body: JSON.stringify({ url })
             });
             const data = await res.json();
-
+ 
             if (res.ok) {
               this.repo = data;
               this.githubUrl = url;
@@ -382,5 +369,5 @@
     }
   </script>
 </body>
-
+ 
 </html>
