@@ -1,5 +1,7 @@
 import Groq from "groq-sdk";
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+import config from '../config/config.js';
+
+const groq = new Groq({ apiKey: config.groq.apiKey });
 
 const groqController = {
   analyseCommits: async (req, res) => {;
