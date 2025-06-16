@@ -74,7 +74,7 @@ const githubController = {
     try {
       const header = {
         headers: {
-          Authorization: `token ${process.env.GITHUB_TOKEN}`
+          Authorization: `token ${config.github.token}`
         }
       };
       const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/commits?author=${author}`, header);
