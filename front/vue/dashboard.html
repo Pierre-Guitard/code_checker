@@ -269,63 +269,54 @@
         },
 
         async analyserRepository() {
-          // Active le mode de chargement (spinner ou désactivation UI)
+
           this.chargementAnalyse = true;
 
-          // Réinitialise les erreurs précédentes
           this.erreur = '';
 
-          // Réinitialise l’analyse précédente
           this.analyse = null;
 
-          // Vide la liste des questions du précédent quiz
           this.questions = [];
 
           try {
-            // 1. Récupérer le code source du repository GitHub à partir de l'URL saisie
+          
             console.log('Récupération du code...');
             const repoCodeRes = await fetch('http://localhost:3000/api/github/get-repository-code', {
-              method: 'POST', // On envoie l’URL du repo en POST
-              headers: { 'Content-Type': 'application/json' }, // Format JSON
-              body: JSON.stringify({ url: this.githubUrl }) // Données envoyées : l'URL saisie par l'utilisateur
+              method: 'POST', 
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: this.githubUrl })
             });
 
-            // Réponse JSON du back contenant le code récupéré ou une erreur
+
             const repoCodeData = await repoCodeRes.json();
 
-            // Si une erreur est survenue côté back (ex : URL invalide, repo introuvable)
             if (!repoCodeRes.ok) {
               this.erreur = repoCodeData.error || 'Erreur lors de la récupération du code';
-              return; // On arrête l’analyse ici
+              return; 
             }
 
-            // 2. Envoyer le code du repo au backend pour analyse via Groq
+
             console.log('Analyse du code...');
             const analyseRes = await fetch('http://localhost:3000/api/groq/analyze-repository', {
-              method: 'POST', // On envoie le code récupéré
-              headers: { 'Content-Type': 'application/json' }, // Format JSON
-              body: JSON.stringify(repoCodeData.repoCode) // Payload = tableau de fichiers { chemin, contenu }
+              method: 'POST', 
+              headers: { 'Content-Type': 'application/json' }, 
+              body: JSON.stringify(repoCodeData.repoCode)
             });
 
-            // Réponse contenant les résultats d’analyse (note, résumé, quiz, etc.)
             const analyseData = await analyseRes.json();
 
-            // Si tout s’est bien passé et que l’analyse contient un résultat
             if (analyseRes.ok && analyseData.result) {
-              this.analyse = analyseData.result; // Stocke l’analyse globale
-              this.questions = analyseData.result.quizz || []; // Stocke les questions (si présentes)
+              this.analyse = analyseData.result;
+              this.questions = analyseData.result.quizz || [];
               console.log('Analyse terminée:', this.analyse);
             } else {
-              // Sinon, on affiche l'erreur côté utilisateur
               this.erreur = analyseData.error || 'Erreur lors de l\'analyse';
             }
 
           } catch (e) {
-            // En cas de problème réseau, serveur éteint, etc.
             console.error('Erreur:', e);
             this.erreur = 'Erreur lors de la connexion au serveur';
           } finally {
-            // Désactive le mode de chargement quoi qu’il arrive
             this.chargementAnalyse = false;
           }
         },
