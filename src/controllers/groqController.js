@@ -8,7 +8,7 @@ const groqController = {
     try {
     const prompt = `
     Analyse l'ensemble de ces commits, fournis 4 elements en repondant EN JSON:
-    1. Une note sur 5, en prenant en compte que le contributeur est de niveau bac+3
+    1. Une note sur 10, en prenant en compte que le contributeur est de niveau bac+3
     2. La probabilité en pourcentage que le code soit généré par IA
     3. Résumé des points forts et des points faibles
     4. 1 ou 2 suggestions d'amélioration
