@@ -105,17 +105,27 @@
           <h3 class="mb-4 " style="font-size: 1.5rem; font-weight: 600; color: #333;">
             Analyse de Code</h3>
 
-
-          <!-- Note globale -->
-          <div class="mb-4 "
-            style="padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
-              <span style="font-weight: 600; color: #333;">Note globale:</span>
-              <span style="font-size: 1.25rem; font-weight: 700; color: #28a745;"
-                x-text="analyse.note_globale + '/100'"></span>
+          <!-- Indicateur de chargement -->
+          <template x-if="chargementAnalyse">
+            <div class="loading">
+              <div class="loading-spinner"></div>
+              <p>Analyse du code en cours...</p>
             </div>
-            <p style="margin: 0; color: #666;" x-text="analyse.analyse"></p>
-          </div>
+          </template>
+
+          <!-- Analyse disponible -->
+          <template x-if="!chargementAnalyse && analyse">
+            <div>
+              <!-- Note globale -->
+              <div class="mb-4 "
+                style="padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                  <span style="font-weight: 600; color: #333;">Note globale:</span>
+                  <span style="font-size: 1.25rem; font-weight: 700; color: #28a745;"
+                    x-text="analyse.note_globale + '/100'"></span>
+                </div>
+                <p style="margin: 0; color: #666;" x-text="analyse.analyse"></p>
+              </div>
           <div class="flex flex-col items-start gap-4">
             <!-- Points positifs -->
             <div class="mb-4"
@@ -165,40 +175,44 @@
                   </template>
                 </ul>
               </div>
+              </div>
             </div>
-          </div>
+          </template>
         </div>
 
         <div x-data="{ x: 0 }" class="mt-6 " style="width: 100%;">
           <h3 class="mb-4 " style="font-size: 1.5rem; font-weight: 600; color: #333;">
             Quizz
           </h3>
-          <div class="mb-4">
+          
+          <template x-if="!chargementAnalyse && questions.length > 0">
+            <div class="mb-4">
+              <div class="flex flex-col items-start gap-4">
+                <div class="mb-4" style="padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #dee2e6;">
+                  <h4 style="margin: 0 0 0.75rem 0; color: #333; font-weight: 600;"
+                    x-text=" 'note : ' + note + '/' + nombreQuestions() "></h4>
+                  <h4 style="margin: 0 0 0.75rem 0; color: #333; font-weight: 600;" x-text="questions[x] ? questions[x].question : ''">
+                  </h4>
 
-
-            <div class="flex flex-col items-start gap-4">
-
-              <div class="mb-4" style="padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #dee2e6;">
-                <h4 style="margin: 0 0 0.75rem 0; color: #333; font-weight: 600;"
-                  x-text=" 'note : ' + note + '/' + nombreQuestions() "></h4>
-                <h4 style="margin: 0 0 0.75rem 0; color: #333; font-weight: 600;" x-text="questions[x].question">
-                </h4>
-
-                <ul style="margin: 0; padding-left: 1rem; color: #333;">
-                  <template x-for="reponse in questions[x].reponses_possibles" :key="reponse">
-                    <div style="margin-bottom: 0.25rem;">
-                      <input type="radio" name="reponse" :value="reponse" x-model="reponse_selectionnee[x]">
-                      <span x-text="reponse"></span>
-                    </div>
-                  </template>
-                </ul>
-                <button @click="validerReponse(x)" class="button-valider">Valider</button>
+                  <ul style="margin: 0; padding-left: 1rem; color: #333;" x-show="questions[x]">
+                    <template x-for="reponse in questions[x] ? questions[x].reponses_possibles : []" :key="reponse">
+                      <div style="margin-bottom: 0.25rem;">
+                        <input type="radio" name="reponse" :value="reponse" x-model="reponse_selectionnee[x]">
+                        <span x-text="reponse"></span>
+                      </div>
+                    </template>
+                  </ul>
+                  <button @click="validerReponse(x)" class="button-valider">Valider</button>
+                </div>
               </div>
-
             </div>
-          </div>
+          </template>
 
-
+          <template x-if="!chargementAnalyse && questions.length === 0 && analyse">
+            <div class="mb-4" style="padding: 1rem; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+              <p style="margin: 0; color: #856404;">Aucune question de quiz n'a été générée pour ce repository.</p>
+            </div>
+          </template>
 
         </div>
     </template>
@@ -211,135 +225,9 @@
         githubUrl: '',
         repo: null,
         erreur: '',
-        analyse: {
-          "note_globale": 80,
-          "analyse": "Le code est bien organisé et suit les bonnes pratiques de développement. Les fichiers sont bien nommés et les fonctions sont bien définies. Le code est également bien commenté, ce qui facilite la compréhension. Cependant, il y a quelques points à améliorer, notamment la gestion des erreurs et la sécurité.",
-          "points_positifs": [
-            "Le code est bien organisé et suit les bonnes pratiques de développement",
-            "Les fichiers sont bien nommés et les fonctions sont bien définies",
-            "Le code est bien commenté",
-            "L'utilisation de modules et de dépendances est bien gérée"
-          ],
-          "points_negatifs": [
-            "La gestion des erreurs est insuffisante",
-            "La sécurité n'est pas suffisamment prise en compte",
-            "Il y a des répétitions de code dans certaines parties du projet"
-          ],
-          "suggestions": [
-            "Ajouter des try-catch pour gérer les erreurs",
-            "Utiliser des bibliothèques de sécurité pour protéger les données sensibles",
-            "Réfactoriser le code pour éviter les répétitions"
-          ],
-          "probabilite_ia": 20,
-          "raisons_ia": [
-            "Le code est trop complexe pour avoir été généré par une IA",
-            "Les commentaires et les noms de variables sont trop personnalisés pour avoir été générés par une IA"
-          ]
-
-        },
-
-        questions: [
-          {
-            "question": "Quelle est une bonne pratique en matière de nommage de fichiers ?",
-            "reponses_possibles": [
-              "Utiliser des noms génériques comme file1.js",
-              "Nommer les fichiers en fonction de leur fonctionnalité",
-              "Utiliser uniquement des lettres majuscules",
-              "Ajouter des espaces dans les noms de fichiers"
-            ],
-            "bonne_reponse": ["Nommer les fichiers en fonction de leur fonctionnalité"]
-          },
-          {
-            "question": "Quel est l’avantage principal de bien commenter son code ?",
-            "reponses_possibles": [
-              "Rendre le code plus long",
-              "Permettre aux IA de mieux l’analyser",
-              "Faciliter la compréhension pour les autres développeurs",
-              "Augmenter la performance"
-            ],
-            "bonne_reponse": ["Faciliter la compréhension pour les autres développeurs"]
-          },
-          {
-            "question": "Pourquoi faut-il éviter les répétitions de code ?",
-            "reponses_possibles": [
-              "Cela rend le code plus lent",
-              "Cela augmente les risques d’erreurs lors des modifications",
-              "Cela rend le code plus beau",
-              "Cela facilite l’usage d’IA"
-            ],
-            "bonne_reponse": ["Cela augmente les risques d’erreurs lors des modifications"]
-          },
-          {
-            "question": "Quelle est une bonne façon de gérer les erreurs dans le code ?",
-            "reponses_possibles": [
-              "Ignorer les erreurs et laisser le code s’exécuter",
-              "Utiliser des alertes",
-              "Ajouter des blocs try-catch",
-              "Redémarrer le programme à chaque erreur"
-            ],
-            "bonne_reponse": ["Ajouter des blocs try-catch"]
-          },
-          {
-            "question": "Pourquoi est-il important de prendre en compte la sécurité dans le code ?",
-            "reponses_possibles": [
-              "Pour éviter les virus informatiques",
-              "Pour rendre le code plus rapide",
-              "Pour protéger les données sensibles et éviter les failles",
-              "Pour mieux organiser les fichiers"
-            ],
-            "bonne_reponse": ["Pour protéger les données sensibles et éviter les failles"]
-          },
-          {
-            "question": "Quel est le rôle des modules dans un projet ?",
-            "reponses_possibles": [
-              "Ralentir l’exécution du code",
-              "Ajouter des fonctionnalités externes de manière propre",
-              "Remplacer les fonctions internes",
-              "Compresser le code automatiquement"
-            ],
-            "bonne_reponse": ["Ajouter des fonctionnalités externes de manière propre"]
-          },
-          {
-            "question": "Que signifie refactoriser du code ?",
-            "reponses_possibles": [
-              "Le réécrire entièrement",
-              "Changer uniquement les noms de variables",
-              "Réorganiser et améliorer sans changer le comportement",
-              "Ajouter plus de commentaires"
-            ],
-            "bonne_reponse": ["Réorganiser et améliorer sans changer le comportement"]
-          },
-          {
-            "question": "Pourquoi des noms de variables personnalisés peuvent indiquer un code humain ?",
-            "reponses_possibles": [
-              "Parce qu’ils sont générés aléatoirement",
-              "Parce qu’ils sont souvent en anglais",
-              "Parce qu’ils reflètent une intention ou une logique métier",
-              "Parce qu’ils sont toujours courts"
-            ],
-            "bonne_reponse": ["Parce qu’ils reflètent une intention ou une logique métier"]
-          },
-          {
-            "question": "Quelle bibliothèque est souvent utilisée pour sécuriser les mots de passe ?",
-            "reponses_possibles": [
-              "bcrypt",
-              "lodash",
-              "express",
-              "axios"
-            ],
-            "bonne_reponse": ["bcrypt"]
-          },
-          {
-            "question": "Quel est un indicateur que le code est bien structuré ?",
-            "reponses_possibles": [
-              "Il n’y a qu’un seul fichier",
-              "Toutes les fonctions sont très longues",
-              "Chaque fonctionnalité est isolée dans un module",
-              "Les variables sont globales"
-            ],
-            "bonne_reponse": ["Chaque fonctionnalité est isolée dans un module"]
-          }
-        ],
+        analyse: null,
+        questions: [],
+        chargementAnalyse: false,
 
         reponse_selectionnee: [],
         reponse_validee: false,
@@ -380,6 +268,67 @@
           }
         },
 
+        async analyserRepository() {
+          // Active le mode de chargement (spinner ou désactivation UI)
+          this.chargementAnalyse = true;
+
+          // Réinitialise les erreurs précédentes
+          this.erreur = '';
+
+          // Réinitialise l’analyse précédente
+          this.analyse = null;
+
+          // Vide la liste des questions du précédent quiz
+          this.questions = [];
+
+          try {
+            // 1. Récupérer le code source du repository GitHub à partir de l'URL saisie
+            console.log('Récupération du code...');
+            const repoCodeRes = await fetch('http://localhost:3000/api/github/get-repository-code', {
+              method: 'POST', // On envoie l’URL du repo en POST
+              headers: { 'Content-Type': 'application/json' }, // Format JSON
+              body: JSON.stringify({ url: this.githubUrl }) // Données envoyées : l'URL saisie par l'utilisateur
+            });
+
+            // Réponse JSON du back contenant le code récupéré ou une erreur
+            const repoCodeData = await repoCodeRes.json();
+
+            // Si une erreur est survenue côté back (ex : URL invalide, repo introuvable)
+            if (!repoCodeRes.ok) {
+              this.erreur = repoCodeData.error || 'Erreur lors de la récupération du code';
+              return; // On arrête l’analyse ici
+            }
+
+            // 2. Envoyer le code du repo au backend pour analyse via Groq
+            console.log('Analyse du code...');
+            const analyseRes = await fetch('http://localhost:3000/api/groq/analyze-repository', {
+              method: 'POST', // On envoie le code récupéré
+              headers: { 'Content-Type': 'application/json' }, // Format JSON
+              body: JSON.stringify(repoCodeData.repoCode) // Payload = tableau de fichiers { chemin, contenu }
+            });
+
+            // Réponse contenant les résultats d’analyse (note, résumé, quiz, etc.)
+            const analyseData = await analyseRes.json();
+
+            // Si tout s’est bien passé et que l’analyse contient un résultat
+            if (analyseRes.ok && analyseData.result) {
+              this.analyse = analyseData.result; // Stocke l’analyse globale
+              this.questions = analyseData.result.quizz || []; // Stocke les questions (si présentes)
+              console.log('Analyse terminée:', this.analyse);
+            } else {
+              // Sinon, on affiche l'erreur côté utilisateur
+              this.erreur = analyseData.error || 'Erreur lors de l\'analyse';
+            }
+
+          } catch (e) {
+            // En cas de problème réseau, serveur éteint, etc.
+            console.error('Erreur:', e);
+            this.erreur = 'Erreur lors de la connexion au serveur';
+          } finally {
+            // Désactive le mode de chargement quoi qu’il arrive
+            this.chargementAnalyse = false;
+          }
+        },
 
 
         async validerUrl() {
@@ -393,6 +342,7 @@
           }
 
           await this.chargerDonnees(this.githubUrl.trim());
+          await this.analyserRepository();
         },
 
         async chargerDonnees(url = null) {
