@@ -59,7 +59,9 @@
             this.author = params.get('author');
             const [owner, repo] = fullRepo.split('/');
             try{
-              const res = await axios.post(`http://localhost:10000/api/github/specific-commit`, {owner, repo, author: this.author})
+
+              const res = await axios.post(`/api/github/specific-commit`, {owner, repo, author: this.author})
+
               const data = res.data.result;
               this.ai_probability = data.ai_probability
               this.strengh_weakness = data.strengh_weakness
