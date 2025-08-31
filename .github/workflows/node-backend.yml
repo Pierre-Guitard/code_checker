@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Cloner le code
+      - name: Clone du code
         uses: actions/checkout@v3
 
       - name: Installer Node.js
@@ -20,7 +20,7 @@ jobs:
       - name: installation des dépendances
         run: npm install
 
-      - name: Lancer les tests
+      - name: Lancement des tests
         run: |
           if [ -f package.json ] && grep -q "\"test\":" package.json; then
             npm test
